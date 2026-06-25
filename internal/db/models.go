@@ -8,6 +8,14 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Comment struct {
+	ID        int32              `json:"id"`
+	LessonID  int32              `json:"lesson_id"`
+	UserID    int32              `json:"user_id"`
+	Body      string             `json:"body"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+}
+
 type Course struct {
 	ID          int32              `json:"id"`
 	Title       string             `json:"title"`
@@ -21,6 +29,15 @@ type Enrollment struct {
 	UserID     int32              `json:"user_id"`
 	CourseID   int32              `json:"course_id"`
 	EnrolledAt pgtype.Timestamptz `json:"enrolled_at"`
+}
+
+type Lesson struct {
+	ID        int32              `json:"id"`
+	CourseID  int32              `json:"course_id"`
+	Title     string             `json:"title"`
+	Body      string             `json:"body"`
+	Order     int32              `json:"order"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
 type Rating struct {

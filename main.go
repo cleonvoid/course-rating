@@ -63,12 +63,16 @@ func main() {
 	ratingHandler := handler.NewRatingHandler(queries, courseHandler, sessionSecret)
 	enrollHandler := handler.NewEnrollmentHandler(queries, courseHandler, sessionSecret)
 	authHandler := handler.NewAuthHandler(queries, tmpls, sessionSecret)
+	lessonHandler := handler.NewLessonHandler(queries, tmpls, sessionSecret)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", courseHandler.List)
 	mux.HandleFunc("GET /courses/{id}", courseHandler.Detail)
 	mux.HandleFunc("POST /courses/{id}/rate", ratingHandler.Upsert)
 	mux.HandleFunc("POST /courses/{id}/enroll", enrollHandler.Enroll)
+	mux.HandleFunc("GET /courses/{id}/lessons/{lid}", lessonHandler.Detail)
+	mux.HandleFunc("POST /courses/{id}/lessons/{lid}/comments", lessonHandler.CreateComment)
+	mux.HandleFunc("POST /courses/{id}/lessons/{lid}/comments/{cid}/delete", lessonHandler.DeleteComment)
 	mux.HandleFunc("GET /signin", authHandler.SignInPage)
 	mux.HandleFunc("POST /signin", authHandler.SignIn)
 	mux.HandleFunc("POST /signout", authHandler.SignOut)
@@ -141,6 +145,7 @@ func parseTemplates() (*template.Template, error) {
 		"internal/templates/base.html",
 		"internal/templates/courses.html",
 		"internal/templates/course.html",
+		"internal/templates/lesson.html",
 		"internal/templates/signin.html",
 		"internal/templates/partials/star_rating.html",
 		"internal/templates/partials/enroll_section.html",

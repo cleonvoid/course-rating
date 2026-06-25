@@ -568,6 +568,234 @@
         .course-item { animation: none; }
         *, *::before, *::after { transition-duration: 0s !important; }
     }
+
+    /* ── LESSONS LIST (course detail) ───────── */
+    .lessons-section {
+        margin-bottom: 3rem;
+    }
+
+    .lessons-heading {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.75rem;
+    }
+
+    .lesson-list {
+        list-style: none;
+        background: var(--surface);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border);
+        overflow: hidden;
+    }
+
+    .lesson-list-item {
+        border-bottom: 1px solid var(--border);
+    }
+    .lesson-list-item:last-child { border-bottom: none; }
+
+    .lesson-list-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        text-decoration: none;
+        color: inherit;
+        transition: background 0.15s;
+    }
+    .lesson-list-link:hover { background: var(--bg); }
+
+    .lesson-list-order {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--ink-3);
+        min-width: 1.5rem;
+    }
+
+    .lesson-list-title {
+        flex: 1;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--ink);
+        transition: color 0.15s;
+    }
+    .lesson-list-link:hover .lesson-list-title { color: var(--sage); }
+
+    .lesson-list-arrow {
+        font-size: 0.85rem;
+        color: var(--ink-3);
+        transition: transform 0.15s, color 0.15s;
+    }
+    .lesson-list-link:hover .lesson-list-arrow {
+        transform: translateX(4px);
+        color: var(--sage);
+    }
+
+    /* ── LESSON DETAIL PAGE ──────────────────── */
+    .lesson-article {
+        background: var(--surface);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .lesson-header {
+        padding: 2.5rem 2.75rem 2rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .lesson-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+        margin-top: 0.5rem;
+    }
+
+    .lesson-body {
+        padding: 1.75rem 2.75rem;
+        font-size: 0.97rem;
+        line-height: 1.8;
+        color: var(--ink-2);
+    }
+
+    /* ── COMMENTS SECTION ────────────────────── */
+    .comments-section {
+        margin-bottom: 3rem;
+    }
+
+    .comments-heading {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 1rem;
+    }
+
+    .comment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .comment-item {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.1rem 1.25rem;
+    }
+
+    .comment-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .comment-author {
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: var(--ink);
+    }
+
+    .comment-time {
+        font-size: 0.75rem;
+        color: var(--ink-3);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .comment-body {
+        font-size: 0.92rem;
+        line-height: 1.65;
+        color: var(--ink-2);
+    }
+
+    .comment-delete-form { margin-top: 0.6rem; }
+
+    .btn-delete-comment {
+        background: transparent;
+        border: none;
+        color: var(--ink-3);
+        font-size: 0.75rem;
+        cursor: pointer;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+        transition: color 0.15s;
+        text-decoration: underline;
+        text-decoration-style: dotted;
+    }
+    .btn-delete-comment:hover { color: #C0392B; }
+
+    .no-comments {
+        font-size: 0.88rem;
+        color: var(--ink-3);
+        margin-bottom: 1.5rem;
+    }
+
+    .comment-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .comment-form-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--ink-2);
+        letter-spacing: 0.03em;
+    }
+
+    .comment-textarea {
+        width: 100%;
+        padding: 0.65rem 0.8rem;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.92rem;
+        font-family: 'Inter', sans-serif;
+        color: var(--ink);
+        background: var(--surface);
+        resize: vertical;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        min-height: 80px;
+    }
+    .comment-textarea:focus {
+        border-color: var(--sage);
+        box-shadow: 0 0 0 3px var(--sage-light);
+    }
+
+    .btn-post-comment {
+        align-self: flex-start;
+        background: var(--ink);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1.1rem;
+        font-size: 0.88rem;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s, transform 0.1s;
+        letter-spacing: 0.01em;
+    }
+    .btn-post-comment:hover { background: #1f1f1c; transform: translateY(-1px); }
+    .btn-post-comment:active { transform: translateY(0); }
+
+    .comment-signin-prompt {
+        font-size: 0.88rem;
+        color: var(--ink-2);
+    }
+    .comment-signin-prompt a { color: var(--sage); font-weight: 500; text-decoration: none; }
+    .comment-signin-prompt a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+        .lesson-header, .lesson-body { padding-left: 1.25rem; padding-right: 1.25rem; }
+    }
     </style>
 </head>
 {{end}}

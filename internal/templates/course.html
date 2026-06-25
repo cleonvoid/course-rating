@@ -39,6 +39,23 @@
             "StudentRating" .StudentRating
         )}}
     </article>
+
+    {{if .Lessons}}
+    <section class="lessons-section">
+        <h2 class="lessons-heading">Lessons</h2>
+        <ol class="lesson-list">
+            {{range .Lessons}}
+            <li class="lesson-list-item">
+                <a href="/courses/{{$.Course.ID}}/lessons/{{.ID}}" class="lesson-list-link">
+                    <span class="lesson-list-order">{{.Order}}</span>
+                    <span class="lesson-list-title">{{.Title}}</span>
+                    <span class="lesson-list-arrow">→</span>
+                </a>
+            </li>
+            {{end}}
+        </ol>
+    </section>
+    {{end}}
 </main>
 </body>
 </html>
