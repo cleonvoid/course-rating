@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head" .Lesson.Title}}
+<body>
+{{template "nav" .CurrentUser}}
+<main class="container">
+    <a class="back-link" href="/courses/{{.Lesson.CourseID}}">← Back to course</a>
+
+    <article class="lesson-article">
+        <header class="lesson-header">
+            <p class="course-eyebrow">Lesson {{.Lesson.Order}}</p>
+            <h1 class="lesson-title">{{.Lesson.Title}}</h1>
+        </header>
+        <div class="lesson-body">
+            <p>{{.Lesson.Body}}</p>
+        </div>
+    </article>
+
+    <section class="comments-section">
+        <h2 class="comments-heading">Comments</h2>
+
+        {{if .Comments}}
+        <div class="comment-list">
+            {{range .Comments}}
+            <div class="comment-item">
+                <div class="comment-meta">
+                    <span class="comment-author">{{.UserName}}</span>
+                    <span class="comment-time">{{.CreatedAt.Time.Format "Jan 2, 2006"}}</span>
+                </div>
+                <p class="comment-body">{{.Body}}</p>
+                {{if and $.CurrentUser (eq $.CurrentUser.ID .UserID)}}
+                <form method="POST" action="/courses/{{$.Lesson.CourseID}}/lessons/{{$.Lesson.ID}}/comments/{{.ID}}/delete" class="comment-delete-form">
+                    <button type="submit" class="btn-delete-comment">Delete</button>
+                </form>
+                {{end}}
+            </div>
+            {{end}}
+        </div>
+        {{else}}
+        <p class="no-comments">No comments yet. Be the first!</p>
+        {{end}}
+
+        {{if .CurrentUser}}
+        <form method="POST" action="/courses/{{.Lesson.CourseID}}/lessons/{{.Lesson.ID}}/comments" class="comment-form">
+            <label class="comment-form-label" for="body">Add a comment</label>
+            <textarea id="body" name="body" rows="3" placeholder="Share your thoughts…" required class="comment-textarea"></textarea>
+            <button type="submit" class="btn-post-comment">Post comment</button>
+        </form>
+        {{else}}
+        <p class="comment-signin-prompt">
+            <a href="/signin">Sign in</a> to leave a comment.
+        </p>
+        {{end}}
+    </section>
+</main>
+</body>
+</html>
