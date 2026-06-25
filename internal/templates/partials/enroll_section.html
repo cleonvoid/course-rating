@@ -1,0 +1,22 @@
+{{define "enroll_section.html"}}
+<div id="enroll-section-{{.CourseID}}" class="enroll-section">
+    {{if not .CurrentUser}}
+    <div class="enroll-notice">
+        <span>Sign in to leave a rating.</span>
+        <a href="/signin">Sign in &rarr;</a>
+    </div>
+    {{else if not .IsEnrolled}}
+    <div class="enroll-notice">
+        <span>Enroll in this course to leave a rating.</span>
+        <form hx-post="/courses/{{.CourseID}}/enroll"
+              hx-target="#enroll-section-{{.CourseID}}"
+              hx-swap="outerHTML"
+              style="margin:0">
+            <button type="submit" class="btn-enroll">Enroll now</button>
+        </form>
+    </div>
+    {{else}}
+    {{template "star_rating.html" .}}
+    {{end}}
+</div>
+{{end}}

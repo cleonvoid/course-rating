@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head" .Course.Title}}
+<body>
+{{template "nav" .CurrentUser}}
+<main class="container">
+    <a class="back-link" href="/">All Courses</a>
+
+    <article class="course-article">
+        <header class="course-header">
+            <p class="course-eyebrow">Course</p>
+            <h1 class="course-article-title">{{.Course.Title}}</h1>
+            <p class="course-article-by">Taught by <strong>{{.Course.Instructor}}</strong></p>
+        </header>
+
+        <div class="course-body">
+            <p class="course-desc">{{.Course.Description}}</p>
+        </div>
+
+        <div class="course-stats-bar">
+            <div class="stat-block">
+                <span class="stat-big">{{printf "%.1f" .Course.AvgRating}}</span>
+                <span class="stat-stars-row">{{starsDisplay .Course.AvgRating}}</span>
+                <span class="stat-caption">Avg rating</span>
+            </div>
+            <div class="stat-rule"></div>
+            <div class="stat-block">
+                <span class="stat-big">{{.Course.RatingCount}}</span>
+                <span class="stat-caption">{{if eq .Course.RatingCount 1}}Rating{{else}}Ratings{{end}}</span>
+            </div>
+        </div>
+
+        {{template "enroll_section.html" (dict
+            "CourseID"      .Course.ID
+            "AvgRating"     .Course.AvgRating
+            "RatingCount"   .Course.RatingCount
+            "CurrentUser"   .CurrentUser
+            "IsEnrolled"    .IsEnrolled
+            "StudentRating" .StudentRating
+        )}}
+    </article>
+</main>
+</body>
+</html>

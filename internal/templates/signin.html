@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head" "Sign In"}}
+<body>
+{{template "nav" false}}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <span class="auth-wordmark">Course Rating</span>
+        <h1 class="auth-title">Welcome back</h1>
+        <p class="auth-sub">Sign in to rate courses you&rsquo;re enrolled in.</p>
+
+        <p class="form-error">{{.Error}}</p>
+
+        <form method="POST" action="/signin">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email"
+                       required autofocus placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       required placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+            </div>
+            <button type="submit" class="btn-primary">Sign in</button>
+        </form>
+
+        <div class="demo-panel">
+            <p class="demo-eyebrow">Demo accounts</p>
+            <div class="demo-list">
+                <div class="demo-entry">
+                    <span class="demo-email">alice@example.com</span>
+                    <span class="demo-pw">alice123</span>
+                </div>
+                <div class="demo-entry">
+                    <span class="demo-email">bob@example.com</span>
+                    <span class="demo-pw">bob123</span>
+                </div>
+                <div class="demo-entry">
+                    <span class="demo-email">carol@example.com</span>
+                    <span class="demo-pw">carol123</span>
+                </div>
+                <div class="demo-entry">
+                    <span class="demo-email">dave@example.com</span>
+                    <span class="demo-pw">dave123</span>
+                </div>
+                <div class="demo-entry">
+                    <span class="demo-email">eve@example.com</span>
+                    <span class="demo-pw">eve123</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

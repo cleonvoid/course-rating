@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head" "Courses"}}
+<body>
+{{template "nav" .CurrentUser}}
+<main class="container">
+    <div class="page-hero">
+        <h1 class="page-title">Courses</h1>
+        <span class="page-count">{{len .Courses}} available</span>
+    </div>
+
+    <ul class="course-list">
+    {{range .Courses}}
+    <li class="course-item">
+        <a class="course-link" href="/courses/{{.ID}}">
+            <div class="course-info">
+                <h2 class="course-name">{{.Title}}</h2>
+                <span class="course-instructor">{{.Instructor}}</span>
+            </div>
+            <div class="course-score">
+                <span class="score-value">{{printf "%.1f" .AvgRating}}</span>
+                <span class="score-stars">{{starsDisplay .AvgRating}}</span>
+                <span class="score-count">{{.RatingCount}} {{if eq .RatingCount 1}}rating{{else}}ratings{{end}}</span>
+            </div>
+        </a>
+    </li>
+    {{else}}
+    <li style="padding:2rem 0; color:var(--ink-3); font-size:0.9rem;">No courses available.</li>
+    {{end}}
+    </ul>
+</main>
+</body>
+</html>

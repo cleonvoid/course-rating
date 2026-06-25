@@ -1,0 +1,16 @@
+# Binary
+/server
+/course-rating
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Go
+vendor/
+
+# Editor
+.DS_Store
+.idea/
+.vscode/

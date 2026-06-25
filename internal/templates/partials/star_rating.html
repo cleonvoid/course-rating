@@ -1,0 +1,30 @@
+{{define "star_rating.html"}}
+<div id="star-rating-{{.CourseID}}" class="star-rating-widget">
+    <div class="widget-rating-row">
+        <span class="widget-avg">{{printf "%.1f" .AvgRating}}</span>
+        <span class="widget-stars-text">{{starsDisplay .AvgRating}}</span>
+        <span class="widget-count">{{.RatingCount}} {{if eq .RatingCount 1}}rating{{else}}ratings{{end}}</span>
+    </div>
+
+    <p class="rate-label">{{if .StudentRating}}Your rating{{else}}Rate this course{{end}}</p>
+
+    <form hx-post="/courses/{{.CourseID}}/rate"
+          hx-target="#star-rating-{{.CourseID}}"
+          hx-swap="outerHTML"
+          hx-trigger="change">
+        <div class="stars-input">
+            {{range seqDesc 5}}
+            <input type="radio"
+                   id="star{{.}}-{{$.CourseID}}"
+                   name="stars"
+                   value="{{.}}"
+                   {{if eq $.StudentRating .}}checked{{end}}>
+            <label for="star{{.}}-{{$.CourseID}}" title="{{.}} star{{if ne . 1}}s{{end}}">&#9733;</label>
+            {{end}}
+        </div>
+        <p class="feedback">
+            {{if .StudentRating}}Rated {{.StudentRating}} / 5 &mdash; click to change.{{else}}Click a star to submit your rating.{{end}}
+        </p>
+    </form>
+</div>
+{{end}}
