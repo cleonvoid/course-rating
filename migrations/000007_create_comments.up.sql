@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS comments (
+    id         SERIAL PRIMARY KEY,
+    lesson_id  INTEGER NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    body       TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

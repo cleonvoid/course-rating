@@ -77,16 +77,24 @@ func (h *CourseHandler) Detail(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	lessons, err := h.queries.ListLessonsByCourse(r.Context(), int32(id))
+	if err != nil {
+		http.Error(w, "failed to fetch lessons", http.StatusInternalServerError)
+		return
+	}
+
 	data := struct {
 		Course        db.GetCourseRow
 		CurrentUser   *db.GetUserByIDRow
 		IsEnrolled    bool
 		StudentRating int
+		Lessons       []db.Lesson
 	}{
 		Course:        course,
 		CurrentUser:   currentUser,
 		IsEnrolled:    isEnrolled,
 		StudentRating: studentRating,
+		Lessons:       lessons,
 	}
 
 	if err := h.tmpls.ExecuteTemplate(w, "course.html", data); err != nil {

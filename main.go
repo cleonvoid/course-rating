@@ -5,11 +5,14 @@ import (
 	"embed"
 	"fmt"
 	"html/template"
-	"log"
+	"log/slog"
 	"math"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -18,6 +21,7 @@ import (
 
 	"github.com/cleonvoid/course-rating/internal/db"
 	"github.com/cleonvoid/course-rating/internal/handler"
+	"github.com/cleonvoid/course-rating/internal/middleware"
 )
 
 //go:embed internal/templates
@@ -27,11 +31,21 @@ var templateFS embed.FS
 var migrationsFS embed.FS
 
 func main() {
+	var logHandler slog.Handler
+	if os.Getenv("APP_ENV") == "production" {
+		logHandler = slog.NewJSONHandler(os.Stdout, nil)
+	} else {
+		logHandler = slog.NewTextHandler(os.Stdout, nil)
+	}
+	logger := slog.New(logHandler)
+	slog.SetDefault(logger)
+
 	ctx := context.Background()
 
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
-		log.Fatal("DATABASE_URL environment variable is required")
+		logger.Error("DATABASE_URL environment variable is required")
+		os.Exit(1)
 	}
 
 	sessionSecret := os.Getenv("SESSION_SECRET")
@@ -40,22 +54,26 @@ func main() {
 	}
 
 	if err := runMigrations(dbURL); err != nil {
-		log.Fatalf("migration failed: %v", err)
+		logger.Error("migration failed", "err", err)
+		os.Exit(1)
 	}
 
 	pool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
-		log.Fatalf("failed to connect to database: %v", err)
+		logger.Error("failed to connect to database", "err", err)
+		os.Exit(1)
 	}
 	defer pool.Close()
 
 	if err := pool.Ping(ctx); err != nil {
-		log.Fatalf("database ping failed: %v", err)
+		logger.Error("database ping failed", "err", err)
+		os.Exit(1)
 	}
 
 	tmpls, err := parseTemplates()
 	if err != nil {
-		log.Fatalf("failed to parse templates: %v", err)
+		logger.Error("failed to parse templates", "err", err)
+		os.Exit(1)
 	}
 
 	queries := db.New(pool)
@@ -63,12 +81,16 @@ func main() {
 	ratingHandler := handler.NewRatingHandler(queries, courseHandler, sessionSecret)
 	enrollHandler := handler.NewEnrollmentHandler(queries, courseHandler, sessionSecret)
 	authHandler := handler.NewAuthHandler(queries, tmpls, sessionSecret)
+	lessonHandler := handler.NewLessonHandler(queries, tmpls, sessionSecret)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", courseHandler.List)
 	mux.HandleFunc("GET /courses/{id}", courseHandler.Detail)
 	mux.HandleFunc("POST /courses/{id}/rate", ratingHandler.Upsert)
 	mux.HandleFunc("POST /courses/{id}/enroll", enrollHandler.Enroll)
+	mux.HandleFunc("GET /courses/{id}/lessons/{lid}", lessonHandler.Detail)
+	mux.HandleFunc("POST /courses/{id}/lessons/{lid}/comments", lessonHandler.CreateComment)
+	mux.HandleFunc("POST /courses/{id}/lessons/{lid}/comments/{cid}/delete", lessonHandler.DeleteComment)
 	mux.HandleFunc("GET /signin", authHandler.SignInPage)
 	mux.HandleFunc("POST /signin", authHandler.SignIn)
 	mux.HandleFunc("POST /signout", authHandler.SignOut)
@@ -78,10 +100,39 @@ func main() {
 		port = "8080"
 	}
 
-	log.Printf("listening on :%s", port)
-	if err := http.ListenAndServe(":"+port, mux); err != nil {
-		log.Fatal(err)
+	rl := middleware.NewIPRateLimiter(20, 50, logger)
+	h := middleware.Chain(mux,
+		middleware.Logging(logger),
+		middleware.Recovery(logger),
+		rl.Middleware(),
+	)
+
+	srv := &http.Server{
+		Addr:    ":" + port,
+		Handler: h,
 	}
+
+	go func() {
+		logger.Info("listening", "port", port)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Error("server error", "err", err)
+			os.Exit(1)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	logger.Info("shutting down")
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		logger.Error("shutdown failed", "err", err)
+		os.Exit(1)
+	}
+	logger.Info("shutdown complete")
 }
 
 func runMigrations(dbURL string) error {
@@ -141,6 +192,7 @@ func parseTemplates() (*template.Template, error) {
 		"internal/templates/base.html",
 		"internal/templates/courses.html",
 		"internal/templates/course.html",
+		"internal/templates/lesson.html",
 		"internal/templates/signin.html",
 		"internal/templates/partials/star_rating.html",
 		"internal/templates/partials/enroll_section.html",
